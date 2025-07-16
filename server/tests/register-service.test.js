@@ -25,13 +25,13 @@ jest.unstable_mockModule("bcrypt", () => ({
 }));
 
 const AppError = (await import("../utils/app-error.js")).default;
-const { RegisterService } = await import(
+const { registerService } = await import(
   "../services/auth/register-service.js"
 );
 const User = (await import("../models/user-model.js")).default;
 const bcrypt = (await import("bcrypt")).default;
 
-describe("RegisterService", () => {
+describe("registerService", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -40,86 +40,86 @@ describe("RegisterService", () => {
   describe("Validasi Field Kosong", () => {
     it("harus melempar error jika name kosong", async () => {
       await expect(
-        RegisterService("", "test@example.com", "Password123!")
+        registerService("", "test@example.com", "Password123!")
       ).rejects.toThrow(AppError);
       await expect(
-        RegisterService("", "test@example.com", "Password123!")
+        registerService("", "test@example.com", "Password123!")
       ).rejects.toThrow("Validasi gagal, Nama wajib diisi");
     });
 
     it("harus melempar error jika name hanya berisi whitespace", async () => {
       await expect(
-        RegisterService("   ", "test@example.com", "Password123!")
+        registerService("   ", "test@example.com", "Password123!")
       ).rejects.toThrow(AppError);
       await expect(
-        RegisterService("   ", "test@example.com", "Password123!")
+        registerService("   ", "test@example.com", "Password123!")
       ).rejects.toThrow("Validasi gagal, Nama wajib diisi");
     });
 
     it("harus melempar error jika email kosong", async () => {
-      await expect(RegisterService("User", "", "Password123!")).rejects.toThrow(
+      await expect(registerService("User", "", "Password123!")).rejects.toThrow(
         AppError
       );
-      await expect(RegisterService("User", "", "Password123!")).rejects.toThrow(
+      await expect(registerService("User", "", "Password123!")).rejects.toThrow(
         "Validasi gagal, Email wajib diisi"
       );
     });
 
     it("harus melempar error jika email hanya berisi whitespace", async () => {
       await expect(
-        RegisterService("User", "   ", "Password123!")
+        registerService("User", "   ", "Password123!")
       ).rejects.toThrow(AppError);
       await expect(
-        RegisterService("User", "   ", "Password123!")
+        registerService("User", "   ", "Password123!")
       ).rejects.toThrow("Validasi gagal, Email wajib diisi");
     });
 
     it("harus melempar error jika password kosong", async () => {
       await expect(
-        RegisterService("User", "test@example.com", "")
+        registerService("User", "test@example.com", "")
       ).rejects.toThrow(AppError);
       await expect(
-        RegisterService("User", "test@example.com", "")
+        registerService("User", "test@example.com", "")
       ).rejects.toThrow("Validasi gagal, Password wajib diisi");
     });
 
     it("harus melempar error jika password hanya berisi whitespace", async () => {
       await expect(
-        RegisterService("User", "test@example.com", "   ")
+        registerService("User", "test@example.com", "   ")
       ).rejects.toThrow(AppError);
       await expect(
-        RegisterService("User", "test@example.com", "   ")
+        registerService("User", "test@example.com", "   ")
       ).rejects.toThrow("Validasi gagal, Password wajib diisi");
     });
 
     it("harus melempar error jika semua field kosong", async () => {
-      await expect(RegisterService("", "", "")).rejects.toThrow(AppError);
-      await expect(RegisterService("", "", "")).rejects.toThrow(
+      await expect(registerService("", "", "")).rejects.toThrow(AppError);
+      await expect(registerService("", "", "")).rejects.toThrow(
         "Validasi gagal, Nama wajib diisi, Email wajib diisi, Password wajib diisi"
       );
     });
 
     it("harus melempar error jika name dan email kosong", async () => {
-      await expect(RegisterService("", "", "Password123!")).rejects.toThrow(
+      await expect(registerService("", "", "Password123!")).rejects.toThrow(
         AppError
       );
-      await expect(RegisterService("", "", "Password123!")).rejects.toThrow(
+      await expect(registerService("", "", "Password123!")).rejects.toThrow(
         "Validasi gagal, Nama wajib diisi, Email wajib diisi"
       );
     });
 
     it("harus melempar error jika name dan password kosong", async () => {
-      await expect(RegisterService("", "test@example.com", "")).rejects.toThrow(
+      await expect(registerService("", "test@example.com", "")).rejects.toThrow(
         AppError
       );
-      await expect(RegisterService("", "test@example.com", "")).rejects.toThrow(
+      await expect(registerService("", "test@example.com", "")).rejects.toThrow(
         "Validasi gagal, Nama wajib diisi, Password wajib diisi"
       );
     });
 
     it("harus melempar error jika email dan password kosong", async () => {
-      await expect(RegisterService("User", "", "")).rejects.toThrow(AppError);
-      await expect(RegisterService("User", "", "")).rejects.toThrow(
+      await expect(registerService("User", "", "")).rejects.toThrow(AppError);
+      await expect(registerService("User", "", "")).rejects.toThrow(
         "Validasi gagal, Email wajib diisi, Password wajib diisi"
       );
     });
@@ -129,46 +129,46 @@ describe("RegisterService", () => {
   describe("Validasi Format Email", () => {
     it("harus melempar error jika email tidak mengandung @", async () => {
       await expect(
-        RegisterService("User", "testemail.com", "Password123!")
+        registerService("User", "testemail.com", "Password123!")
       ).rejects.toThrow(AppError);
       await expect(
-        RegisterService("User", "testemail.com", "Password123!")
+        registerService("User", "testemail.com", "Password123!")
       ).rejects.toThrow("Format email tidak valid");
     });
 
     it("harus melempar error jika email mengandung @ ganda", async () => {
       await expect(
-        RegisterService("User", "test@@example.com", "Password123!")
+        registerService("User", "test@@example.com", "Password123!")
       ).rejects.toThrow(AppError);
       await expect(
-        RegisterService("User", "test@@example.com", "Password123!")
+        registerService("User", "test@@example.com", "Password123!")
       ).rejects.toThrow("Format email tidak valid");
     });
 
     it("harus melempar error jika email tidak mengandung domain", async () => {
       await expect(
-        RegisterService("User", "test@", "Password123!")
+        registerService("User", "test@", "Password123!")
       ).rejects.toThrow(AppError);
       await expect(
-        RegisterService("User", "test@", "Password123!")
+        registerService("User", "test@", "Password123!")
       ).rejects.toThrow("Format email tidak valid");
     });
 
     it("harus melempar error jika email tidak mengandung titik pada domain", async () => {
       await expect(
-        RegisterService("User", "test@example", "Password123!")
+        registerService("User", "test@example", "Password123!")
       ).rejects.toThrow(AppError);
       await expect(
-        RegisterService("User", "test@example", "Password123!")
+        registerService("User", "test@example", "Password123!")
       ).rejects.toThrow("Format email tidak valid");
     });
 
     it("harus melempar error jika email mengandung spasi", async () => {
       await expect(
-        RegisterService("User", "test @example.com", "Password123!")
+        registerService("User", "test @example.com", "Password123!")
       ).rejects.toThrow(AppError);
       await expect(
-        RegisterService("User", "test @example.com", "Password123!")
+        registerService("User", "test @example.com", "Password123!")
       ).rejects.toThrow("Format email tidak valid");
     });
   });
@@ -177,37 +177,37 @@ describe("RegisterService", () => {
   describe("Validasi Password", () => {
     it("harus melempar error jika password tidak mengandung huruf", async () => {
       await expect(
-        RegisterService("User", "test@example.com", "123456!@#")
+        registerService("User", "test@example.com", "123456!@#")
       ).rejects.toThrow(AppError);
       await expect(
-        RegisterService("User", "test@example.com", "123456!@#")
+        registerService("User", "test@example.com", "123456!@#")
       ).rejects.toThrow("Password harus mengandung huruf, angka dan simbol");
     });
 
     it("harus melempar error jika password tidak mengandung angka", async () => {
       await expect(
-        RegisterService("User", "test@example.com", "Password!@#")
+        registerService("User", "test@example.com", "Password!@#")
       ).rejects.toThrow(AppError);
       await expect(
-        RegisterService("User", "test@example.com", "Password!@#")
+        registerService("User", "test@example.com", "Password!@#")
       ).rejects.toThrow("Password harus mengandung huruf, angka dan simbol");
     });
 
     it("harus melempar error jika password tidak mengandung simbol", async () => {
       await expect(
-        RegisterService("User", "test@example.com", "Password123")
+        registerService("User", "test@example.com", "Password123")
       ).rejects.toThrow(AppError);
       await expect(
-        RegisterService("User", "test@example.com", "Password123")
+        registerService("User", "test@example.com", "Password123")
       ).rejects.toThrow("Password harus mengandung huruf, angka dan simbol");
     });
 
     it("harus melempar error jika password kurang dari 8 karakter", async () => {
       await expect(
-        RegisterService("User", "test@example.com", "Pass1!")
+        registerService("User", "test@example.com", "Pass1!")
       ).rejects.toThrow(AppError);
       await expect(
-        RegisterService("User", "test@example.com", "Pass1!")
+        registerService("User", "test@example.com", "Pass1!")
       ).rejects.toThrow("Password harus mengandung huruf, angka dan simbol");
     });
 
@@ -215,7 +215,7 @@ describe("RegisterService", () => {
       User.findOne.mockResolvedValue(null);
       bcrypt.hash.mockResolvedValue("hashedPassword");
 
-      const result = await RegisterService(
+      const result = await registerService(
         "User",
         "test@example.com",
         "Password123!"
@@ -231,10 +231,10 @@ describe("RegisterService", () => {
       User.findOne.mockResolvedValue({ _id: "123", email: "test@example.com" });
 
       await expect(
-        RegisterService("User", "test@example.com", "Password123!")
+        registerService("User", "test@example.com", "Password123!")
       ).rejects.toThrow(AppError);
       await expect(
-        RegisterService("User", "test@example.com", "Password123!")
+        registerService("User", "test@example.com", "Password123!")
       ).rejects.toThrow("Email sudah digunakan");
     });
 
@@ -242,10 +242,10 @@ describe("RegisterService", () => {
       User.findOne.mockResolvedValue({ _id: "123", email: "TEST@EXAMPLE.COM" });
 
       await expect(
-        RegisterService("User", "test@example.com", "Password123!")
+        registerService("User", "test@example.com", "Password123!")
       ).rejects.toThrow(AppError);
       await expect(
-        RegisterService("User", "test@example.com", "Password123!")
+        registerService("User", "test@example.com", "Password123!")
       ).rejects.toThrow("Email sudah digunakan");
     });
 
@@ -253,7 +253,7 @@ describe("RegisterService", () => {
       User.findOne.mockResolvedValue(null);
       bcrypt.hash.mockResolvedValue("hashedPassword");
 
-      await RegisterService("User", "TEST@EXAMPLE.COM", "Password123!");
+      await registerService("User", "TEST@EXAMPLE.COM", "Password123!");
 
       expect(User.findOne).toHaveBeenCalledWith({
         email: "test@example.com",
@@ -265,10 +265,10 @@ describe("RegisterService", () => {
   describe("Kombinasi Error", () => {
     it("harus menampilkan semua error validasi sekaligus", async () => {
       await expect(
-        RegisterService("", "invalid-email", "weak")
+        registerService("", "invalid-email", "weak")
       ).rejects.toThrow(AppError);
       await expect(
-        RegisterService("", "invalid-email", "weak")
+        registerService("", "invalid-email", "weak")
       ).rejects.toThrow(
         "Validasi gagal, Nama wajib diisi, Password harus mengandung huruf, angka dan simbol, Format email tidak valid"
       );
@@ -278,10 +278,10 @@ describe("RegisterService", () => {
       User.findOne.mockResolvedValue({ _id: "123", email: "test@example.com" });
 
       await expect(
-        RegisterService("", "test@example.com", "weak")
+        registerService("", "test@example.com", "weak")
       ).rejects.toThrow(AppError);
       await expect(
-        RegisterService("", "test@example.com", "weak")
+        registerService("", "test@example.com", "weak")
       ).rejects.toThrow(
         "Validasi gagal, Nama wajib diisi, Password harus mengandung huruf, angka dan simbol, Email sudah digunakan"
       );
@@ -294,7 +294,7 @@ describe("RegisterService", () => {
       User.findOne.mockResolvedValue(null);
       bcrypt.hash.mockResolvedValue("hashedPassword");
 
-      const result = await RegisterService(
+      const result = await registerService(
         "User",
         "test@example.com",
         "Password123!"
@@ -324,7 +324,7 @@ describe("RegisterService", () => {
       User.findOne.mockResolvedValue(null);
       bcrypt.hash.mockResolvedValue("hashedPassword");
 
-      await RegisterService("  User  ", " TEST@EXAMPLE.COM ", "Password123!");
+      await registerService("  User  ", " TEST@EXAMPLE.COM ", "Password123!");
 
       expect(User.findOne).toHaveBeenCalledWith({
         email: "test@example.com",
@@ -379,7 +379,7 @@ describe("RegisterService", () => {
         User.findOne.mockResolvedValue(null);
         bcrypt.hash.mockResolvedValue("hashedPassword");
 
-        const result = await RegisterService(
+        const result = await registerService(
           "User",
           "test@example.com",
           password

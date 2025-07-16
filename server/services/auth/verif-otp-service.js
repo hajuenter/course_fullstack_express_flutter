@@ -3,15 +3,19 @@ import AppError from "../../utils/app-error.js";
 import crypto from "crypto";
 
 export const verifOtpService = async (email, otp) => {
-  if (!email || email.trim() === "") {
-    throw new AppError(400, "Email wajib diisi");
+  const trimmedEmail = email ? email.trim() : "";
+
+  if (!trimmedEmail || trimmedEmail === "") {
+    errors.push("Email wajib diisi");
   }
 
   if (!otp || otp.trim() === "") {
-    throw new AppError(400, "OTP wajib diisi");
+    errors.push("OTP wajib diisi");
   }
-
-  const normalizedEmail = email.trim().toLowerCase();
+  if (errors.length > 0) {
+    throw new AppError(400, "Validasi gagal, " + errors.join(", "));
+  }
+  const normalizedEmail = trimmedEmail.toLowerCase();
   const user = await User.findOne({ email: normalizedEmail });
 
   if (!user) {

@@ -7,7 +7,6 @@ export const registerService = async (name, email, password) => {
 
   const trimmedName = name ? name.trim() : "";
   const trimmedEmail = email ? email.trim() : "";
-  const trimmedPassword = password ? password.trim() : "";
 
   if (!trimmedName || trimmedName === "") {
     errors.push("Nama wajib diisi");
@@ -17,7 +16,7 @@ export const registerService = async (name, email, password) => {
     errors.push("Email wajib diisi");
   }
 
-  if (!trimmedPassword || trimmedPassword === "") {
+  if (!password || password.trim() === "") {
     errors.push("Password wajib diisi");
   }
 
@@ -25,7 +24,7 @@ export const registerService = async (name, email, password) => {
     /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]).{8,}$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  if (trimmedPassword && !strongPasswordRegex.test(trimmedPassword)) {
+  if (password && !strongPasswordRegex.test(password)) {
     errors.push("Password harus mengandung huruf, angka dan simbol");
   }
 
@@ -47,7 +46,7 @@ export const registerService = async (name, email, password) => {
     throw new AppError(400, "Validasi gagal, " + errors.join(", "));
   }
 
-  const hashedPassword = await bcrypt.hash(trimmedPassword, 10);
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   const newUser = new User({
     name: trimmedName,

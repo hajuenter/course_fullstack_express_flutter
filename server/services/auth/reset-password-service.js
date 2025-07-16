@@ -4,7 +4,8 @@ import bcrypt from "bcrypt";
 
 export const resetPasswordService = async (email, resetToken, newPassword) => {
   const errors = [];
-  if (!email || email.trim() === "") {
+  const trimmedEmail = email ? email.trim() : "";
+  if (!trimmedEmail || trimmedEmail === "") {
     errors.push("Email wajib diisi");
   }
 
@@ -19,7 +20,7 @@ export const resetPasswordService = async (email, resetToken, newPassword) => {
   if (errors.length > 0) {
     throw new AppError(400, "Validasi gagal, " + errors.join(", "));
   }
-  const normalizedEmail = email.trim().toLowerCase();
+  const normalizedEmail = trimmedEmail.trim().toLowerCase();
   const user = await User.findOne({ email: normalizedEmail });
 
   if (!user) {

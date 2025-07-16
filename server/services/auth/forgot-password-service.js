@@ -3,11 +3,13 @@ import nodemailer from "nodemailer";
 import AppError from "../../utils/app-error.js";
 
 export const forgotPasswordService = async (email) => {
-  if (!email || email.trim() === "") {
-    throw new AppError(400, "Email wajib diisi");
+  const trimmedEmail = email ? email.trim() : "";
+
+  if (!trimmedEmail || trimmedEmail === "") {
+    throw new AppError(400, "Validasi gagal, Email wajib diisi");
   }
 
-  const normalizedEmail = email.trim().toLowerCase();
+  const normalizedEmail = trimmedEmail.toLowerCase();
   const user = await User.findOne({ email: normalizedEmail });
 
   if (!user) {

@@ -21,14 +21,14 @@ jest.unstable_mockModule("nodemailer", () => {
   };
 });
 
-const { ForgotPasswordService } = await import(
+const { forgotPasswordService } = await import(
   "../services/auth/forgot-password-service.js"
 );
 const AppError = (await import("../utils/app-error.js")).default;
 const User = (await import("../models/user-model.js")).default;
 const { __mock__ } = await import("nodemailer");
 
-describe("ForgotPasswordService", () => {
+describe("forgotPasswordService", () => {
   beforeEach(() => {
     // Reset semua mock sebelum setiap test
     jest.clearAllMocks();
@@ -41,8 +41,8 @@ describe("ForgotPasswordService", () => {
   });
 
   it("harus melempar error jika email kosong", async () => {
-    await expect(ForgotPasswordService("")).rejects.toThrow(AppError);
-    await expect(ForgotPasswordService("")).rejects.toThrow(
+    await expect(forgotPasswordService("")).rejects.toThrow(AppError);
+    await expect(forgotPasswordService("")).rejects.toThrow(
       "Email wajib diisi"
     );
   });
@@ -50,10 +50,10 @@ describe("ForgotPasswordService", () => {
   it("harus melempar error jika email tidak ditemukan", async () => {
     User.findOne.mockResolvedValue(null);
 
-    await expect(ForgotPasswordService("test@example.com")).rejects.toThrow(
+    await expect(forgotPasswordService("test@example.com")).rejects.toThrow(
       AppError
     );
-    await expect(ForgotPasswordService("test@example.com")).rejects.toThrow(
+    await expect(forgotPasswordService("test@example.com")).rejects.toThrow(
       "Email tidak ditemukan"
     );
   });
@@ -69,10 +69,10 @@ describe("ForgotPasswordService", () => {
 
     User.findOne.mockResolvedValue(fakeUser);
 
-    await expect(ForgotPasswordService("test@example.com")).rejects.toThrow(
+    await expect(forgotPasswordService("test@example.com")).rejects.toThrow(
       AppError
     );
-    await expect(ForgotPasswordService("test@example.com")).rejects.toThrow(
+    await expect(forgotPasswordService("test@example.com")).rejects.toThrow(
       "Permintaan OTP terlalu sering"
     );
   });
@@ -92,7 +92,7 @@ describe("ForgotPasswordService", () => {
     User.findOne.mockResolvedValue(fakeUser);
     __mock__.sendMail.mockRejectedValueOnce(new Error("SMTP error"));
 
-    await expect(ForgotPasswordService("test@example.com")).rejects.toThrow(
+    await expect(forgotPasswordService("test@example.com")).rejects.toThrow(
       "Gagal mengirim OTP"
     );
 
@@ -113,7 +113,7 @@ describe("ForgotPasswordService", () => {
 
     __mock__.sendMail.mockResolvedValue(true);
 
-    const result = await ForgotPasswordService("test@example.com");
+    const result = await forgotPasswordService("test@example.com");
 
     expect(result).toEqual({
       success: true,

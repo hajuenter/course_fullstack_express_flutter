@@ -5,8 +5,9 @@ import AppError from "../../utils/app-error.js";
 
 export const loginService = async (email, password) => {
   const errors = [];
+  const trimmedEmail = email ? email.trim() : "";
 
-  if (!email || email.trim() === "") {
+  if (!trimmedEmail || trimmedEmail === "") {
     errors.push("Email wajib diisi");
   }
 
@@ -18,7 +19,7 @@ export const loginService = async (email, password) => {
     throw new AppError(400, "Validasi gagal, " + errors.join(", "));
   }
 
-  const user = await User.findOne({ email: email.trim().toLowerCase() });
+  const user = await User.findOne({ email: trimmedEmail.toLowerCase() });
 
   if (!user) {
     throw new AppError(401, "Email atau password salah");
