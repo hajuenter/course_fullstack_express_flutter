@@ -2,7 +2,7 @@ import User from "../../models/user-model.js";
 import AppError from "../../utils/app-error.js";
 import bcrypt from "bcrypt";
 
-export const ResetPasswordService = async (email, resetToken, newPassword) => {
+export const resetPasswordService = async (email, resetToken, newPassword) => {
   const errors = [];
   if (!email || email.trim() === "") {
     errors.push("Email wajib diisi");

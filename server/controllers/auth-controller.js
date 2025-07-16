@@ -1,13 +1,13 @@
-import { RegisterService } from "../services/auth/register-service.js";
-import { LoginService } from "../services/auth/login-service.js";
-import { ForgotPasswordService } from "../services/auth/forgot-password-service.js";
-import { VerifOtpService } from "../services/auth/verif-otp-service.js";
-import { ResetPasswordService } from "../services/auth/reset-password-service.js";
+import { registerService } from "../services/auth/register-service.js";
+import { loginService } from "../services/auth/login-service.js";
+import { forgotPasswordService } from "../services/auth/forgot-password-service.js";
+import { verifOtpService } from "../services/auth/verif-otp-service.js";
+import { resetPasswordService } from "../services/auth/reset-password-service.js";
 
-export const RegisterController = async (req, res) => {
+export const registerController = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    const result = await RegisterService(name, email, password);
+    const result = await registerService(name, email, password);
 
     res.status(result.status).json({
       success: result.success,
@@ -23,10 +23,10 @@ export const RegisterController = async (req, res) => {
   }
 };
 
-export const LoginController = async (req, res) => {
+export const loginController = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const result = await LoginService(email, password);
+    const result = await loginService(email, password);
 
     res.status(result.status).json({
       success: result.success,
@@ -43,10 +43,10 @@ export const LoginController = async (req, res) => {
   }
 };
 
-export const ForgotPasswordController = async (req, res) => {
+export const forgotPasswordController = async (req, res) => {
   try {
     const { email } = req.body;
-    const result = await ForgotPasswordService(email);
+    const result = await forgotPasswordService(email);
 
     return res.status(result.status).json({
       success: result.success,
@@ -61,11 +61,11 @@ export const ForgotPasswordController = async (req, res) => {
   }
 };
 
-export const VerifOtpController = async (req, res) => {
+export const verifOtpController = async (req, res) => {
   try {
     const { email, otp } = req.body;
 
-    const result = await VerifOtpService(email, otp);
+    const result = await verifOtpService(email, otp);
 
     return res.status(result.status).json({
       success: result.success,
@@ -81,11 +81,11 @@ export const VerifOtpController = async (req, res) => {
   }
 };
 
-export const ResetPasswordController = async (req, res) => {
+export const resetPasswordController = async (req, res) => {
   try {
     const { email, resetToken, newPassword } = req.body;
 
-    const result = await ResetPasswordService(email, resetToken, newPassword);
+    const result = await resetPasswordService(email, resetToken, newPassword);
 
     return res.status(result.status).json({
       success: result.success,

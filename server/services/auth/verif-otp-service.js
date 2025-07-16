@@ -2,7 +2,7 @@ import User from "../../models/user-model.js";
 import AppError from "../../utils/app-error.js";
 import crypto from "crypto";
 
-export const VerifOtpService = async (email, otp) => {
+export const verifOtpService = async (email, otp) => {
   if (!email || email.trim() === "") {
     throw new AppError(400, "Email wajib diisi");
   }

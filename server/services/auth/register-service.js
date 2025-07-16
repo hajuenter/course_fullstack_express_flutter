@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import User from "../../models/user-model.js";
 import AppError from "../../utils/app-error.js";
 
-export const RegisterService = async (name, email, password) => {
+export const registerService = async (name, email, password) => {
   const errors = [];
 
   const trimmedName = name ? name.trim() : "";

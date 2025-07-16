@@ -3,7 +3,7 @@ import User from "../../models/user-model.js";
 import jwt from "jsonwebtoken";
 import AppError from "../../utils/app-error.js";
 
-export const LoginService = async (email, password) => {
+export const loginService = async (email, password) => {
   const errors = [];
 
   if (!email || email.trim() === "") {
