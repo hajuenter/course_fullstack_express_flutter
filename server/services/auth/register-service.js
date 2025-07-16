@@ -5,15 +5,19 @@ import AppError from "../../utils/app-error.js";
 export const RegisterService = async (name, email, password) => {
   const errors = [];
 
-  if (!name || name.trim() === "") {
+  const trimmedName = name ? name.trim() : "";
+  const trimmedEmail = email ? email.trim() : "";
+  const trimmedPassword = password ? password.trim() : "";
+
+  if (!trimmedName || trimmedName === "") {
     errors.push("Nama wajib diisi");
   }
 
-  if (!email || email.trim() === "") {
+  if (!trimmedEmail || trimmedEmail === "") {
     errors.push("Email wajib diisi");
   }
 
-  if (!password || password.trim() === "") {
+  if (!trimmedPassword || trimmedPassword === "") {
     errors.push("Password wajib diisi");
   }
 
@@ -21,30 +25,33 @@ export const RegisterService = async (name, email, password) => {
     /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]).{8,}$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  if (password && !strongPasswordRegex.test(password)) {
+  if (trimmedPassword && !strongPasswordRegex.test(trimmedPassword)) {
     errors.push("Password harus mengandung huruf, angka dan simbol");
   }
 
-  if (email && !emailRegex.test(email)) {
+  if (trimmedEmail && !emailRegex.test(trimmedEmail)) {
     errors.push("Format email tidak valid");
   }
 
-  const existingUser = await User.findOne({
-    email: email.trim().toLowerCase(),
-  });
-  if (existingUser) {
-    errors.push("Email sudah digunakan");
+  // Cek email sudah digunakan (hanya jika email valid)
+  if (trimmedEmail && emailRegex.test(trimmedEmail)) {
+    const existingUser = await User.findOne({
+      email: trimmedEmail.toLowerCase(),
+    });
+    if (existingUser) {
+      errors.push("Email sudah digunakan");
+    }
   }
 
   if (errors.length > 0) {
     throw new AppError(400, "Validasi gagal, " + errors.join(", "));
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(trimmedPassword, 10);
 
   const newUser = new User({
-    name: name.trim(),
-    email: email.trim().toLowerCase(),
+    name: trimmedName,
+    email: trimmedEmail.toLowerCase(),
     password: hashedPassword,
   });
 
