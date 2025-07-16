@@ -1,7 +1,7 @@
 import express from "express";
 import {
   LoginController,
-  LupaPasswordController,
+  ForgotPasswordController,
   RegisterController,
   ResetPasswordController,
   VerifOtpController,
@@ -11,7 +11,7 @@ const authRouter = express.Router();
 
 authRouter.post("/register", RegisterController);
 authRouter.post("/login", LoginController);
-authRouter.post("/lupa-password", LupaPasswordController);
+authRouter.post("/lupa-password", ForgotPasswordController);
 authRouter.post("/verif-otp", VerifOtpController);
 authRouter.post("/reset-password", ResetPasswordController);
 

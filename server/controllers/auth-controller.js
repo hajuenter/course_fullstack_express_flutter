@@ -1,6 +1,6 @@
 import { RegisterService } from "../services/auth/register-service.js";
 import { LoginService } from "../services/auth/login-service.js";
-import { LupaPasswordService } from "../services/auth/lupa-password-service.js";
+import { ForgotPasswordService } from "../services/auth/forgot-password-service.js";
 import { VerifOtpService } from "../services/auth/verif-otp-service.js";
 import { ResetPasswordService } from "../services/auth/reset-password-service.js";
 
@@ -43,10 +43,10 @@ export const LoginController = async (req, res) => {
   }
 };
 
-export const LupaPasswordController = async (req, res) => {
+export const ForgotPasswordController = async (req, res) => {
   try {
     const { email } = req.body;
-    const result = await LupaPasswordService(email);
+    const result = await ForgotPasswordService(email);
 
     return res.status(result.status).json({
       success: result.success,

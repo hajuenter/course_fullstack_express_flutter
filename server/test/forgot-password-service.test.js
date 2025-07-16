@@ -21,14 +21,14 @@ jest.unstable_mockModule("nodemailer", () => {
   };
 });
 
-const { LupaPasswordService } = await import(
-  "../services/auth/lupa-password-service.js"
+const { ForgotPasswordService } = await import(
+  "../services/auth/forgot-password-service.js"
 );
 const AppError = (await import("../utils/app-error.js")).default;
 const User = (await import("../models/user-model.js")).default;
 const { __mock__ } = await import("nodemailer");
 
-describe("LupaPasswordService", () => {
+describe("ForgotPasswordService", () => {
   beforeEach(() => {
     // Reset semua mock sebelum setiap test
     jest.clearAllMocks();
@@ -41,17 +41,19 @@ describe("LupaPasswordService", () => {
   });
 
   it("harus melempar error jika email kosong", async () => {
-    await expect(LupaPasswordService("")).rejects.toThrow(AppError);
-    await expect(LupaPasswordService("")).rejects.toThrow("Email wajib diisi");
+    await expect(ForgotPasswordService("")).rejects.toThrow(AppError);
+    await expect(ForgotPasswordService("")).rejects.toThrow(
+      "Email wajib diisi"
+    );
   });
 
   it("harus melempar error jika email tidak ditemukan", async () => {
     User.findOne.mockResolvedValue(null);
 
-    await expect(LupaPasswordService("test@example.com")).rejects.toThrow(
+    await expect(ForgotPasswordService("test@example.com")).rejects.toThrow(
       AppError
     );
-    await expect(LupaPasswordService("test@example.com")).rejects.toThrow(
+    await expect(ForgotPasswordService("test@example.com")).rejects.toThrow(
       "Email tidak ditemukan"
     );
   });
@@ -67,10 +69,10 @@ describe("LupaPasswordService", () => {
 
     User.findOne.mockResolvedValue(fakeUser);
 
-    await expect(LupaPasswordService("test@example.com")).rejects.toThrow(
+    await expect(ForgotPasswordService("test@example.com")).rejects.toThrow(
       AppError
     );
-    await expect(LupaPasswordService("test@example.com")).rejects.toThrow(
+    await expect(ForgotPasswordService("test@example.com")).rejects.toThrow(
       "Permintaan OTP terlalu sering"
     );
   });
@@ -90,7 +92,7 @@ describe("LupaPasswordService", () => {
     User.findOne.mockResolvedValue(fakeUser);
     __mock__.sendMail.mockRejectedValueOnce(new Error("SMTP error"));
 
-    await expect(LupaPasswordService("test@example.com")).rejects.toThrow(
+    await expect(ForgotPasswordService("test@example.com")).rejects.toThrow(
       "Gagal mengirim OTP"
     );
 
@@ -111,7 +113,7 @@ describe("LupaPasswordService", () => {
 
     __mock__.sendMail.mockResolvedValue(true);
 
-    const result = await LupaPasswordService("test@example.com");
+    const result = await ForgotPasswordService("test@example.com");
 
     expect(result).toEqual({
       success: true,

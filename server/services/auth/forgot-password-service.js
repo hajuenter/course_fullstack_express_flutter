@@ -2,7 +2,7 @@ import User from "../../models/user-model.js";
 import nodemailer from "nodemailer";
 import AppError from "../../utils/app-error.js";
 
-export const LupaPasswordService = async (email) => {
+export const ForgotPasswordService = async (email) => {
   if (!email || email.trim() === "") {
     throw new AppError(400, "Email wajib diisi");
   }
