@@ -3,7 +3,7 @@ import { jest } from "@jest/globals";
 const saveMock = jest.fn();
 
 jest.unstable_mockModule("../models/user-model.js", () => {
-  const User = jest.fn().mockImplementation(() => ({
+  const userModel = jest.fn().mockImplementation(() => ({
     _id: "userId123",
     name: "User",
     email: "test@example.com",
@@ -11,10 +11,10 @@ jest.unstable_mockModule("../models/user-model.js", () => {
     save: saveMock,
   }));
 
-  User.findOne = jest.fn();
+  userModel.findOne = jest.fn();
 
   return {
-    default: User,
+    default: userModel,
   };
 });
 
@@ -28,7 +28,7 @@ const AppError = (await import("../utils/app-error.js")).default;
 const { registerService } = await import(
   "../services/auth/register-service.js"
 );
-const User = (await import("../models/user-model.js")).default;
+const userModel = (await import("../models/user-model.js")).default;
 const bcrypt = (await import("bcrypt")).default;
 
 describe("registerService", () => {
@@ -212,7 +212,7 @@ describe("registerService", () => {
     });
 
     it("harus menerima password yang mengandung huruf besar dan kecil", async () => {
-      User.findOne.mockResolvedValue(null);
+      userModel.findOne.mockResolvedValue(null);
       bcrypt.hash.mockResolvedValue("hashedPassword");
 
       const result = await registerService(
@@ -228,7 +228,10 @@ describe("registerService", () => {
   // Test untuk validasi email sudah digunakan
   describe("Validasi Email Sudah Digunakan", () => {
     it("harus melempar error jika email sudah digunakan", async () => {
-      User.findOne.mockResolvedValue({ _id: "123", email: "test@example.com" });
+      userModel.findOne.mockResolvedValue({
+        _id: "123",
+        email: "test@example.com",
+      });
 
       await expect(
         registerService("User", "test@example.com", "Password123!")
@@ -239,7 +242,10 @@ describe("registerService", () => {
     });
 
     it("harus melempar error jika email sudah digunakan (case insensitive)", async () => {
-      User.findOne.mockResolvedValue({ _id: "123", email: "TEST@EXAMPLE.COM" });
+      userModel.findOne.mockResolvedValue({
+        _id: "123",
+        email: "TEST@EXAMPLE.COM",
+      });
 
       await expect(
         registerService("User", "test@example.com", "Password123!")
@@ -250,12 +256,12 @@ describe("registerService", () => {
     });
 
     it("harus memanggil User.findOne dengan email lowercase", async () => {
-      User.findOne.mockResolvedValue(null);
+      userModel.findOne.mockResolvedValue(null);
       bcrypt.hash.mockResolvedValue("hashedPassword");
 
       await registerService("User", "TEST@EXAMPLE.COM", "Password123!");
 
-      expect(User.findOne).toHaveBeenCalledWith({
+      expect(userModel.findOne).toHaveBeenCalledWith({
         email: "test@example.com",
       });
     });
@@ -275,7 +281,10 @@ describe("registerService", () => {
     });
 
     it("harus menampilkan error email sudah digunakan bersama error lainnya", async () => {
-      User.findOne.mockResolvedValue({ _id: "123", email: "test@example.com" });
+      userModel.findOne.mockResolvedValue({
+        _id: "123",
+        email: "test@example.com",
+      });
 
       await expect(
         registerService("", "test@example.com", "weak")
@@ -291,7 +300,7 @@ describe("registerService", () => {
   // Test untuk registrasi sukses
   describe("Registrasi Sukses", () => {
     it("berhasil register dan mengembalikan data user", async () => {
-      User.findOne.mockResolvedValue(null);
+      userModel.findOne.mockResolvedValue(null);
       bcrypt.hash.mockResolvedValue("hashedPassword");
 
       const result = await registerService(
@@ -302,7 +311,7 @@ describe("registerService", () => {
 
       expect(bcrypt.hash).toHaveBeenCalledWith("Password123!", 10);
       expect(saveMock).toHaveBeenCalled();
-      expect(User).toHaveBeenCalledWith({
+      expect(userModel).toHaveBeenCalledWith({
         name: "User",
         email: "test@example.com",
         password: "hashedPassword",
@@ -321,15 +330,15 @@ describe("registerService", () => {
     });
 
     it("harus trim whitespace dari input dan convert email ke lowercase", async () => {
-      User.findOne.mockResolvedValue(null);
+      userModel.findOne.mockResolvedValue(null);
       bcrypt.hash.mockResolvedValue("hashedPassword");
 
       await registerService("  User  ", " TEST@EXAMPLE.COM ", "Password123!");
 
-      expect(User.findOne).toHaveBeenCalledWith({
+      expect(userModel.findOne).toHaveBeenCalledWith({
         email: "test@example.com",
       });
-      expect(User).toHaveBeenCalledWith({
+      expect(userModel).toHaveBeenCalledWith({
         name: "User",
         email: "test@example.com",
         password: "hashedPassword",
@@ -337,7 +346,7 @@ describe("registerService", () => {
     });
 
     it("harus menerima berbagai karakter simbol dalam password", async () => {
-      User.findOne.mockResolvedValue(null);
+      userModel.findOne.mockResolvedValue(null);
       bcrypt.hash.mockResolvedValue("hashedPassword");
 
       const passwords = [
@@ -376,7 +385,7 @@ describe("registerService", () => {
       ];
 
       for (const password of passwords) {
-        User.findOne.mockResolvedValue(null);
+        userModel.findOne.mockResolvedValue(null);
         bcrypt.hash.mockResolvedValue("hashedPassword");
 
         const result = await registerService(
