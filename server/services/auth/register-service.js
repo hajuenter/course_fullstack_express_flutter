@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import User from "../../models/user-model.js";
+import userModel from "../../models/user-model.js";
 import AppError from "../../utils/app-error.js";
 
 export const registerService = async (name, email, password) => {
@@ -34,7 +34,7 @@ export const registerService = async (name, email, password) => {
 
   // Cek email sudah digunakan (hanya jika email valid)
   if (trimmedEmail && emailRegex.test(trimmedEmail)) {
-    const existingUser = await User.findOne({
+    const existingUser = await userModel.findOne({
       email: trimmedEmail.toLowerCase(),
     });
     if (existingUser) {
@@ -48,7 +48,7 @@ export const registerService = async (name, email, password) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const newUser = new User({
+  const newUser = new userModel({
     name: trimmedName,
     email: trimmedEmail.toLowerCase(),
     password: hashedPassword,

@@ -1,4 +1,4 @@
-import User from "../../models/user-model.js";
+import userModel from "../../models/user-model.js";
 import nodemailer from "nodemailer";
 import AppError from "../../utils/app-error.js";
 
@@ -10,7 +10,7 @@ export const forgotPasswordService = async (email) => {
   }
 
   const normalizedEmail = trimmedEmail.toLowerCase();
-  const user = await User.findOne({ email: normalizedEmail });
+  const user = await userModel.findOne({ email: normalizedEmail });
 
   if (!user) {
     throw new AppError(404, "Email tidak ditemukan");

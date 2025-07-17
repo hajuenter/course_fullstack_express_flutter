@@ -1,4 +1,4 @@
-import User from "../../models/user-model.js";
+import userModel from "../../models/user-model.js";
 import AppError from "../../utils/app-error.js";
 import bcrypt from "bcrypt";
 
@@ -21,7 +21,7 @@ export const resetPasswordService = async (email, resetToken, newPassword) => {
     throw new AppError(400, "Validasi gagal, " + errors.join(", "));
   }
   const normalizedEmail = trimmedEmail.trim().toLowerCase();
-  const user = await User.findOne({ email: normalizedEmail });
+  const user = await userModel.findOne({ email: normalizedEmail });
 
   if (!user) {
     throw new AppError(404, "User tidak ditemukan");

@@ -1,4 +1,4 @@
-import User from "../../models/user-model.js";
+import userModel from "../../models/user-model.js";
 import AppError from "../../utils/app-error.js";
 import crypto from "crypto";
 
@@ -16,7 +16,7 @@ export const verifOtpService = async (email, otp) => {
     throw new AppError(400, "Validasi gagal, " + errors.join(", "));
   }
   const normalizedEmail = trimmedEmail.toLowerCase();
-  const user = await User.findOne({ email: normalizedEmail });
+  const user = await userModel.findOne({ email: normalizedEmail });
 
   if (!user) {
     throw new AppError(404, "User tidak ditemukan");

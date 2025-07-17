@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import User from "../../models/user-model.js";
+import userModel from "../../models/user-model.js";
 import jwt from "jsonwebtoken";
 import AppError from "../../utils/app-error.js";
 
@@ -19,7 +19,7 @@ export const loginService = async (email, password) => {
     throw new AppError(400, "Validasi gagal, " + errors.join(", "));
   }
 
-  const user = await User.findOne({ email: trimmedEmail.toLowerCase() });
+  const user = await userModel.findOne({ email: trimmedEmail.toLowerCase() });
 
   if (!user) {
     throw new AppError(401, "Email atau password salah");
