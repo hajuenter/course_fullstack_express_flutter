@@ -25,7 +25,7 @@ const { forgotPasswordService } = await import(
   "../services/auth/forgot-password-service.js"
 );
 const AppError = (await import("../utils/app-error.js")).default;
-const User = (await import("../models/user-model.js")).default;
+const userModel = (await import("../models/user-model.js")).default;
 const { __mock__ } = await import("nodemailer");
 
 describe("forgotPasswordService", () => {
@@ -48,7 +48,7 @@ describe("forgotPasswordService", () => {
   });
 
   it("harus melempar error jika email tidak ditemukan", async () => {
-    User.findOne.mockResolvedValue(null);
+    userModel.findOne.mockResolvedValue(null);
 
     await expect(forgotPasswordService("test@example.com")).rejects.toThrow(
       AppError
@@ -67,7 +67,7 @@ describe("forgotPasswordService", () => {
       save: jest.fn(),
     };
 
-    User.findOne.mockResolvedValue(fakeUser);
+    userModel.findOne.mockResolvedValue(fakeUser);
 
     await expect(forgotPasswordService("test@example.com")).rejects.toThrow(
       AppError
@@ -89,7 +89,7 @@ describe("forgotPasswordService", () => {
       save: jest.fn().mockResolvedValue(true),
     };
 
-    User.findOne.mockResolvedValue(fakeUser);
+    userModel.findOne.mockResolvedValue(fakeUser);
     __mock__.sendMail.mockRejectedValueOnce(new Error("SMTP error"));
 
     await expect(forgotPasswordService("test@example.com")).rejects.toThrow(
@@ -109,7 +109,7 @@ describe("forgotPasswordService", () => {
       save: jest.fn().mockResolvedValue(true),
     };
 
-    User.findOne.mockResolvedValue(fakeUser);
+    userModel.findOne.mockResolvedValue(fakeUser);
 
     __mock__.sendMail.mockResolvedValue(true);
 
