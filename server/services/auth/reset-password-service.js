@@ -3,63 +3,42 @@ import AppError from "../../utils/app-error.js";
 import bcrypt from "bcrypt";
 
 export const resetPasswordService = async (email, resetToken, newPassword) => {
-  const errors = [];
-  const trimmedEmail = email ? email.trim() : "";
-  if (!trimmedEmail || trimmedEmail === "") {
-    errors.push("Email wajib diisi");
-  }
+  try {
+    const normalizedEmail = email.toLowerCase();
+    const user = await userModel.findOne({ email: normalizedEmail });
 
-  if (!resetToken || resetToken.trim() === "") {
-    errors.push("Token wajib diisi");
-  }
+    if (!user) {
+      throw new AppError(404, "User tidak ditemukan");
+    }
 
-  if (!newPassword || newPassword.trim() === "") {
-    errors.push("Password baru wajib diisi");
-  }
+    if (
+      !user.reset_token_expired ||
+      new Date(user.reset_token_expired) < new Date()
+    ) {
+      user.reset_token = null;
+      user.reset_token_expired = null;
+      await user.save();
+      throw new AppError(401, "Token sudah kedaluwarsa");
+    }
 
-  if (errors.length > 0) {
-    throw new AppError(400, "Validasi gagal, " + errors.join(", "));
-  }
-  const normalizedEmail = trimmedEmail.trim().toLowerCase();
-  const user = await userModel.findOne({ email: normalizedEmail });
+    if (!user.reset_token || user.reset_token !== resetToken) {
+      throw new AppError(401, "Token tidak valid");
+    }
 
-  if (!user) {
-    throw new AppError(404, "User tidak ditemukan");
-  }
+    const hashed = await bcrypt.hash(newPassword, 10);
+    user.password = hashed;
 
-  if (
-    !user.reset_token_expired ||
-    new Date(user.reset_token_expired) < new Date()
-  ) {
     user.reset_token = null;
     user.reset_token_expired = null;
     await user.save();
-    throw new AppError(401, "Token sudah kedaluwarsa");
+
+    return {
+      message: "Password berhasil direset",
+    };
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError(500, "Reset Password Service Error: " + error.message);
   }
-
-  // Token tidak valid
-  if (!user.reset_token || user.reset_token !== resetToken) {
-    throw new AppError(401, "Token tidak valid");
-  }
-
-  const strongPasswordRegex =
-    /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+[\]{};':"\\|,.<>/?`~\-]).{8,}$/;
-  if (!strongPasswordRegex.test(newPassword)) {
-    throw new AppError(
-      400,
-      "Password minimal 8 karakter dan harus mengandung huruf, angka, serta simbol"
-    );
-  }
-
-  const hashed = await bcrypt.hash(newPassword, 10);
-  user.password = hashed;
-
-  user.reset_token = null;
-  user.reset_token_expired = null;
-  await user.save();
-  return {
-    success: true,
-    status: 200,
-    message: "Password berhasil direset",
-  };
 };

@@ -3,67 +3,37 @@ import userModel from "../../models/user-model.js";
 import AppError from "../../utils/app-error.js";
 
 export const registerService = async (name, email, password) => {
-  const errors = [];
-
-  const trimmedName = name ? name.trim() : "";
-  const trimmedEmail = email ? email.trim() : "";
-
-  if (!trimmedName || trimmedName === "") {
-    errors.push("Nama wajib diisi");
-  }
-
-  if (!trimmedEmail || trimmedEmail === "") {
-    errors.push("Email wajib diisi");
-  }
-
-  if (!password || password.trim() === "") {
-    errors.push("Password wajib diisi");
-  }
-
-  const strongPasswordRegex =
-    /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]).{8,}$/;
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  if (password && !strongPasswordRegex.test(password)) {
-    errors.push("Password harus mengandung huruf, angka dan simbol");
-  }
-
-  if (trimmedEmail && !emailRegex.test(trimmedEmail)) {
-    errors.push("Format email tidak valid");
-  }
-
-  // Cek email sudah digunakan (hanya jika email valid)
-  if (trimmedEmail && emailRegex.test(trimmedEmail)) {
+  try {
     const existingUser = await userModel.findOne({
-      email: trimmedEmail.toLowerCase(),
+      email: email.toLowerCase(),
     });
+
     if (existingUser) {
-      errors.push("Email sudah digunakan");
+      throw new AppError(400, "Email sudah digunakan");
     }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new userModel({
+      name: name,
+      email: email.toLowerCase(),
+      password: hashedPassword,
+    });
+
+    await newUser.save();
+
+    return {
+      message: "Registrasi berhasil",
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+      },
+    };
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError(500, "Register Service Error: " + error.message);
   }
-
-  if (errors.length > 0) {
-    throw new AppError(400, "Validasi gagal, " + errors.join(", "));
-  }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  const newUser = new userModel({
-    name: trimmedName,
-    email: trimmedEmail.toLowerCase(),
-    password: hashedPassword,
-  });
-
-  await newUser.save();
-
-  return {
-    success: true,
-    status: 201,
-    message: "Registrasi berhasil",
-    user: {
-      id: newUser._id,
-      name: newUser.name,
-      email: newUser.email,
-    },
-  };
 };
