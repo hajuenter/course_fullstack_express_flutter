@@ -10,7 +10,7 @@ export const validate = (schema) => {
 
     if (bodyError) {
       const messages = bodyError.details.map((err) => err.message).join(", ");
-      return next(new AppError(400, "Validasi body gagal, " + messages));
+      return next(new AppError(400, "Validasi gagal, " + messages));
     }
 
     next();
