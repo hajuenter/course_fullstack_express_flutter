@@ -22,6 +22,6 @@ export const addProductService = async (name, description, price, stock) => {
       },
     };
   } catch (error) {
-    throw new Error("Add Product Service Error: " + error.message());
+    throw new Error("Add Product Service Error: " + error.message);
   }
 };
